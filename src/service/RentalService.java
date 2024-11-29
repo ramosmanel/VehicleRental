@@ -1,5 +1,6 @@
 package service;
 
+import config.DatabaseConstants;
 import entities.Client;
 import entities.Vehicle;
 
@@ -8,9 +9,9 @@ import java.time.LocalDate;
 import java.time.Period;
 
 public class RentalService {
-    private static final String JDBC_URL = "jdbc:mysql://localhost:3306/locadora";
-    private static final String JDBC_USER = "root";
-    private static final String JDBC_PASSWORD = "1234";
+    private static final String JDBC_URL = DatabaseConstants.JDBC_URL;
+    private static final String JDBC_USER = DatabaseConstants.JDBC_USER;
+    private static final String JDBC_PASSWORD = DatabaseConstants.JDBC_PASSWORD;
 
     public static boolean validateMajority(LocalDate dataNascimento) {
         return Period.between(dataNascimento, LocalDate.now()).getYears() >= 18;
@@ -41,13 +42,13 @@ public class RentalService {
                 System.out.println("Locação registrada com sucesso!");
             }
 
-            String sqlupdateRental = "UPDATE veiculos SET disponivel = disponivel - 1 WHERE id = ?";
+            String sqlupdateRental = "UPDATE veiculos SET disponivel = NOT disponivel WHERE id = ?";
             try (PreparedStatement stmtAtualizaDisponibilidade = conn.prepareStatement(sqlupdateRental)) {
                 stmtAtualizaDisponibilidade.setInt(1, veiculo.getId());
                 int rowsAffected = stmtAtualizaDisponibilidade.executeUpdate();
 
                 if (rowsAffected > 0) {
-                    System.out.println("Quantidade de veículos disponíveis atualizada com sucesso.");
+                    System.out.println("Disponibilidade do veículo atualizada com sucesso.");
                 } else {
                     System.out.println("Erro ao atualizar a disponibilidade do veículo.");
                 }
